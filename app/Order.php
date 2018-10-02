@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * // Properties
  * @property int $id
  * @property int $concert_id
+ * @property int $amount
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -57,7 +58,7 @@ class Order extends Model
         return [
             'email' => $this->email,
             'ticket_quantity' => $this->ticketQuantity(),
-            'amount' => $this->ticketQuantity() * $this->concert->ticket_price,
+            'amount' => $this->amount,
         ];
     }
 }
