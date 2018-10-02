@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
  * Class Order
  * @package App
  *
+ * // Mixins
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ * @mixin \Illuminate\Database\Query\Builder
+ *
  * // Properties
  * @property int $id
  * @property int $concert_id
@@ -15,11 +19,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * // Relations
  * @property-read Concert $concert
  * @property-read Ticket $tickets
- *
- * @mixin \Eloquent
  */
 class Order extends Model
 {

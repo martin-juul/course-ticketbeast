@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class Concert
  * @package App
+ *
+ * // Mixins
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ * @mixin \Illuminate\Database\Query\Builder
+ *
  * // Properties
  * @property int $id
  * @property string $title
@@ -23,10 +28,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $published_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * // Relations
  * @property-read Order $orders
  *
- * @mixin \Eloquent
+ * // Methods
+ * @method static published()
+ *
  */
 class Concert extends Model
 {
@@ -55,7 +63,7 @@ class Concert extends Model
 
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsToMany(Order::class, 'tickets');
     }
 
     public function hasOrderFor($customerEmail)
@@ -80,6 +88,10 @@ class Concert extends Model
         return $this->createOrder($email, $tickets);
     }
 
+    /**
+     * @param $quantity
+     * @return mixed
+     */
     public function findTickets($quantity)
     {
         $tickets = $this->tickets()->available()->take($quantity)->get();
@@ -92,15 +104,15 @@ class Concert extends Model
     }
 
     /**
-     * @param $email
-     * @param $tickets
+     * @param $email string
+     * @param $tickets Ticket[]
      * @return Model
      */
     public function createOrder($email, $tickets)
     {
-        $order = $this->orders()->create([
+        $order = Order::create([
             'email' => $email,
-            'amount' => $tickets->count() * $this->ticket_price,
+            'amount' => $tickets->sum('price'),
         ]);
 
         foreach ($tickets as $ticket) {
