@@ -88,6 +88,11 @@ class Concert extends Model
         return $this->createOrder($email, $tickets);
     }
 
+    public function reserveTickets($quantity)
+    {
+        return $this->findTickets($quantity);
+    }
+
     /**
      * @param $quantity
      * @return mixed
