@@ -24,7 +24,10 @@ class PurchaseTicketsTest extends TestCase
 
     private function orderTickets($concert, $params)
     {
-        $this->json('POST', "/concerts/{$concert->id}/orders", $params);
+        $savedRequest = $this->app['request'];
+        $response = $this->json('POST', "/concerts/{$concert->id}/orders", $params);
+        $this->app['request'] = $savedRequest;
+        return $response;
     }
 
     private function assertValidationError($field)
@@ -149,7 +152,7 @@ class PurchaseTicketsTest extends TestCase
 
         $this->assertEquals(3600, $this->paymentGateway->totalCharges());
         $this->assertTrue($concert->hasOrderFor('personA@example.com'));
-        $this->assertEquals(3, $concert->ordersFor('john@example.com')->first()->ticketQuantity());
+        $this->assertEquals(3, $concert->ordersFor('personA@example.com')->first()->ticketQuantity());
     }
 
     /** @test */
