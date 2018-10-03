@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $concert_id
  * @property int $order_id
+ * @property \Illuminate\Support\Carbon|null $reserved_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
@@ -34,7 +35,7 @@ class Ticket extends Model
 
     public function release()
     {
-        $this->update(['order_id' => null]);
+        $this->update(['reserved_at' => null]);
     }
 
     public function reserve()
