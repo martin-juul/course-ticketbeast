@@ -6,10 +6,13 @@ class Reservation
 {
     /** @var Ticket[] */
     private $tickets;
+    /** @var string */
+    private $email;
 
-    public function __construct($tickets)
+    public function __construct($tickets, string $email)
     {
         $this->tickets = $tickets;
+        $this->email = $email;
     }
 
     public function totalCost()
@@ -27,5 +30,10 @@ class Reservation
         foreach($this->tickets as $ticket) {
             $ticket->release();
         }
+    }
+
+    public function email()
+    {
+        return $this->email;
     }
 }
