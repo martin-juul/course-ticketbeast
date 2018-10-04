@@ -9,10 +9,7 @@ class ConcertsController extends Controller
 {
     public function show($id)
     {
-        $concert = Concert::published()->first();
-
-        dd($concert->toArray());
-
+        $concert = Concert::published()->findOrFail($id);
         return view('concerts.show', ['concert' => $concert]);
     }
 }

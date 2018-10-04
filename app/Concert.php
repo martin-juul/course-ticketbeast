@@ -2,9 +2,8 @@
 
 namespace App;
 
-use App\Exceptions\NotEnoughTicketsException;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Exceptions\NotEnoughTicketsException;
 
 /**
  * Class Concert
@@ -42,7 +41,7 @@ class Concert extends Model
     protected $guarded = [];
     protected $dates = ['date'];
 
-    public function scopePublished(Builder $query)
+    public function scopePublished($query)
     {
         return $query->whereNotNull('published_at');
     }
@@ -85,23 +84,18 @@ class Concert extends Model
     public function orderTickets($email, $ticketQuantity)
     {
         $tickets = $this->findTickets($ticketQuantity);
-
         return $this->createOrder($email, $tickets);
     }
 
-    public function reserveTickets($quantity, string $email)
+    public function reserveTickets($quantity, $email)
     {
-        $tickets = $this->findTickets($quantity)->each(function (Ticket $ticket) {
+        $tickets = $this->findTickets($quantity)->each(function ($ticket) {
             $ticket->reserve();
         });
 
         return new Reservation($tickets, $email);
     }
 
-    /**
-     * @param $quantity
-     * @return mixed
-     */
     public function findTickets($quantity)
     {
         $tickets = $this->tickets()->available()->take($quantity)->get();
@@ -113,11 +107,6 @@ class Concert extends Model
         return $tickets;
     }
 
-    /**
-     * @param $email string
-     * @param $tickets Ticket[]
-     * @return Model
-     */
     public function createOrder($email, $tickets)
     {
         return Order::forTickets($tickets, $email, $tickets->sum('price'));

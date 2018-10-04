@@ -54,10 +54,6 @@ class Order extends Model
 
     public function ticketQuantity()
     {
-        if ($this->relationLoaded('tickets')) {
-            return $this->tickets->count();
-        }
-
         return $this->tickets()->count();
     }
 

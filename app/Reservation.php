@@ -2,16 +2,12 @@
 
 namespace App;
 
-use App\Billing\PaymentGateway;
-
 class Reservation
 {
-    /** @var Ticket[] */
     private $tickets;
-    /** @var string */
     private $email;
 
-    public function __construct($tickets, string $email)
+    public function __construct($tickets, $email)
     {
         $this->tickets = $tickets;
         $this->email = $email;
@@ -32,7 +28,7 @@ class Reservation
         return $this->email;
     }
 
-    public function complete(PaymentGateway $paymentGateway, string $paymentToken)
+    public function complete($paymentGateway, $paymentToken)
     {
         $paymentGateway->charge($this->totalCost(), $paymentToken);
 

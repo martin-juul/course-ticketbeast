@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 /*
 |--------------------------------------------------------------------------
 | Model Factories
@@ -26,22 +28,22 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 $factory->define(App\Concert::class, function (Faker\Generator $faker) {
     return [
         'title' => 'Example Band',
-        'subtitle' => 'The Fake Openers',
-        'date' => \Carbon\Carbon::parse('+2 weeks'),
+        'subtitle' => 'with The Fake Openers',
+        'date' => Carbon::parse('+2 weeks'),
         'ticket_price' => 2000,
         'venue' => 'The Example Theatre',
         'venue_address' => '123 Example Lane',
         'city' => 'Fakeville',
         'state' => 'ON',
         'zip' => '90210',
-        'additional_information' => 'Some sample additional information',
+        'additional_information' => 'Some sample additional information.',
     ];
 });
 
 $factory->state(App\Concert::class, 'published', function ($faker) {
-   return [
-       'published_at' => Carbon\Carbon::parse('-1 week'),
-   ];
+    return [
+        'published_at' => Carbon::parse('-1 week'),
+    ];
 });
 
 $factory->state(App\Concert::class, 'unpublished', function ($faker) {
@@ -49,6 +51,7 @@ $factory->state(App\Concert::class, 'unpublished', function ($faker) {
         'published_at' => null,
     ];
 });
+
 
 $factory->define(App\Ticket::class, function (Faker\Generator $faker) {
     return [
@@ -60,6 +63,6 @@ $factory->define(App\Ticket::class, function (Faker\Generator $faker) {
 
 $factory->state(App\Ticket::class, 'reserved', function ($faker) {
     return [
-        'reserved_at' => Carbon\Carbon::now(),
+        'reserved_at' => Carbon::now(),
     ];
 });

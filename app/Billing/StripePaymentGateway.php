@@ -7,10 +7,9 @@ use Stripe\Error\InvalidRequest;
 
 class StripePaymentGateway implements PaymentGateway
 {
-    /** @var string */
     private $apiKey;
 
-    public function __construct(string $apiKey)
+    public function __construct($apiKey)
     {
         $this->apiKey = $apiKey;
     }
@@ -22,7 +21,7 @@ class StripePaymentGateway implements PaymentGateway
                 'amount' => $amount,
                 'source' => $token,
                 'currency' => 'usd',
-            ], $this->apiKey);
+            ], ['api_key' => $this->apiKey]);
         } catch (InvalidRequest $e) {
             throw new PaymentFailedException;
         }

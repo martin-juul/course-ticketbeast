@@ -168,8 +168,6 @@ return [
          */
         Zondicons\ZondiconsServiceProvider::class,
 
-        //
-
         /*
          * Application Service Providers...
          */
