@@ -166,6 +166,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Zondicons\ZondiconsServiceProvider::class,
 
         //
 
