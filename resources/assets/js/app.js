@@ -1,11 +1,11 @@
 import TicketCheckout from './components/TicketCheckout.vue'
 
-require('./bootstrap')
+require('./bootstrap');
 
 const app = new Vue({
-    components: {
-        TicketCheckout,
-    },
-})
+  components: {
+    TicketCheckout,
+  },
+});
 
-app.$mount('#app')
+app.$mount('#app');
