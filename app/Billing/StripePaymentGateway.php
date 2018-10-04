@@ -23,17 +23,15 @@ class StripePaymentGateway implements PaymentGateway
                 'currency' => 'usd',
             ], ['api_key' => $this->apiKey]);
         } catch (InvalidRequest $e) {
-            return false;
+            throw new PaymentFailedException;
         }
-
-        return false;
     }
 
     public function getValidTestToken()
     {
         return \Stripe\Token::create([
             'card' => [
-                'number' => '4242424242424242',
+                'number' => "4242424242424242",
                 'exp_month' => 1,
                 'exp_year' => date('Y') + 1,
                 'cvc' => '123'
@@ -45,24 +43,21 @@ class StripePaymentGateway implements PaymentGateway
     {
         $latestCharge = $this->lastCharge();
         $callback($this);
-
         return $this->newChargesSince($latestCharge)->pluck('amount');
     }
 
     private function lastCharge()
     {
-        return \Stripe\Charge::all([
-            'limit' => 1,
-        ], ['api_key' => $this->apiKey])['data'][0];
+        return array_first(Charge::all([
+            'limit' => 1
+        ], ['api_key' => $this->apiKey])['data']);
     }
 
     private function newChargesSince($charge = null)
     {
-        $newCharges =  \Stripe\Charge::all([
-            'limit' => 1,
+        $newCharges = Charge::all([
             'ending_before' => $charge ? $charge->id : null,
         ], ['api_key' => $this->apiKey])['data'];
-
         return collect($newCharges);
     }
 }
