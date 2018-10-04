@@ -42,6 +42,11 @@ class Order extends Model
         return $order;
     }
 
+    public static function findByConfirmationNumber(string $confirmationNumber)
+    {
+        return self::where('confirmation_number', $confirmationNumber)->firstOrFail();
+    }
+
     public function concert()
     {
         return $this->belongsTo(Concert::class);

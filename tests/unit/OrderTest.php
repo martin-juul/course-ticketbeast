@@ -4,6 +4,7 @@ use App\Concert;
 use App\Order;
 use App\Reservation;
 use App\Ticket;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -24,6 +25,30 @@ class OrderTest extends TestCase
         $this->assertEquals(3, $order->ticketQuantity());
         $this->assertEquals(3600, $order->amount);
         $this->assertEquals(2, $concert->ticketsRemaining());
+    }
+
+    /** @test */
+    public function retrieving_an_order_by_confirmation_number()
+    {
+        $order = factory(Order::class)->create([
+            'confirmation_number' => 'ORDERCONFIRMATION1234',
+        ]);
+
+        $foundOrder = Order::findByConfirmationNumber('ORDERCONFIRMATION1234');
+
+        $this->assertEquals($order->id, $foundOrder->id);
+    }
+
+    /** @test */
+    public function retrieving_a_nonexistent_order_by_confirmation_number_throws_an_exception()
+    {
+        try {
+            Order::findByConfirmationNumber('NONEXISTENTCONFIRMATIONNUMBER');
+        } catch (ModelNotFoundException $e) {
+            return;
+        }
+
+        $this->fail('No matching order was found for the specified confirmation number, but the exception [ModelNotFoundException] was not thrown');
     }
 
     /** @test */
