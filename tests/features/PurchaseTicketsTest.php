@@ -53,6 +53,9 @@ class PurchaseTicketsTest extends TestCase
     public function customer_can_purchase_tickets_to_a_published_concert()
     {
         $this->disableExceptionHandling();
+
+        $orderConfirmmationNumberGenerator->generate();
+
         $concert = factory(Concert::class)->states('published')->create(['ticket_price' => 3250])->addTickets(3);
 
         $this->orderTickets($concert, [
@@ -64,6 +67,7 @@ class PurchaseTicketsTest extends TestCase
         $this->assertResponseStatus(201);
 
         $this->seeJsonSubset([
+            'confirmation_number' => 'ORDERCONFIRMATION1234',
             'email' => 'john@example.com',
             'ticket_quantity' => 3,
             'amount' => 9750,
