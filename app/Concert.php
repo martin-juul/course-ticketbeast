@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Exceptions\NotEnoughTicketsException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -41,7 +42,7 @@ class Concert extends Model
     protected $guarded = [];
     protected $dates = ['date'];
 
-    public function scopePublished($query)
+    public function scopePublished(Builder $query)
     {
         return $query->whereNotNull('published_at');
     }
