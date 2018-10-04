@@ -1,6 +1,7 @@
 <?php
 
 use App\Billing\PaymentFailedException;
+use App\Billing\PaymentGateway;
 use App\Billing\StripePaymentGateway;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -12,7 +13,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 class StripePaymentGatewayTest extends TestCase
 {
     private $lastCharge;
-
 
     private function lastCharge()
     {
@@ -35,27 +35,22 @@ class StripePaymentGatewayTest extends TestCase
         $this->lastCharge = $this->lastCharge();
     }
 
-    private function validToken()
+    protected function getPaymentGateway(): PaymentGateway
     {
-        return \Stripe\Token::create([
-            'card' => [
-                'number' => '4242424242424242',
-                'exp_month' => 1,
-                'exp_year' => date('Y') + 1,
-                'cvc' => '123'
-            ]
-        ], ['api_key' => config('services.stripe.secret')])->id;
+        return new StripePaymentGateway(config('services.stripe.secret'));
     }
 
     /** @test */
     public function charges_with_a_valid_payment_token_are_successful()
     {
-        $paymentGateway = new StripePaymentGateway(config('services.stripe.secret'));
+        $paymentGateway = $this->getPaymentGateway();
 
-        $paymentGateway->charge(2500, $this->validToken());
+        $newCharges = $paymentGateway->newChargesDuring(function ($paymentGateway) {
+            $paymentGateway->charge(2500, $paymentGateway->getValidTestToken());
+        });
 
-        $this->assertCount(1, $this->newCharges());
-        $this->assertEquals(2500, $this->lastCharge()->amount);
+        $this->assertCount(1, $newCharges);
+        $this->assertEquals(2500, $newCharges->sum());
     }
 
     /**
@@ -72,5 +67,9 @@ class StripePaymentGatewayTest extends TestCase
         }
 
         $this->fail('Charging with an invalid payment token did not throw a PaymentFailedException');
+
+//        $paymentGateway = new StripePaymentGateway(config('services.stripe.secret'));
+//        $result = $paymentGateway->charge(2500, 'invalid-payment-token');
+//        $this->assertFalse($result);
     }
 }
