@@ -7,7 +7,7 @@ class RandomOrderConfirmationNumberGenerator implements OrderConfirmationNumberG
 
     public function generate()
     {
-        $pool = 'ABCDEFGHJKLMNOPQRSTUVWXYZ23456789';
+        $pool = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         $length = 24;
 
         return substr(str_shuffle(str_repeat($pool, $length)), 0, $length);
