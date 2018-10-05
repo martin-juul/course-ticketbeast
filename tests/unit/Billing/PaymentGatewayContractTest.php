@@ -1,6 +1,7 @@
 <?php
 
 use App\Billing\PaymentFailedException;
+use App\Billing\PaymentGateway;
 
 trait PaymentGatewayContractTest
 {
@@ -22,6 +23,7 @@ trait PaymentGatewayContractTest
     /** @test */
     function can_get_details_about_a_successful_charge()
     {
+        /** @var PaymentGateway $paymentGateway */
         $paymentGateway = $this->getPaymentGateway();
 
         $charge = $paymentGateway->charge(2500, $paymentGateway->getValidTestToken($paymentGateway::TEST_CARD_NUMBER));
@@ -33,16 +35,17 @@ trait PaymentGatewayContractTest
     /** @test */
     function charges_with_an_invalid_payment_token_fail()
     {
+        /** @var PaymentGateway $paymentGateway */
         $paymentGateway = $this->getPaymentGateway();
 
-        $newCharges = $paymentGateway->newChargesDuring(function ($paymentGateway) {
+        $newCharges = $paymentGateway->newChargesDuring(function (PaymentGateway $paymentGateway) {
             try {
                 $paymentGateway->charge(2500, 'invalid-payment-token');
             } catch (PaymentFailedException $e) {
                 return;
             }
 
-            $this->fail("Charging with an invalid payment token did not throw a PaymentFailedException.");
+            $this->fail('Charging with an invalid payment token did not throw a PaymentFailedException.');
         });
 
         $this->assertCount(0, $newCharges);
@@ -51,11 +54,12 @@ trait PaymentGatewayContractTest
     /** @test */
     function can_fetch_charges_created_during_a_callback()
     {
+        /** @var PaymentGateway $paymentGateway */
         $paymentGateway = $this->getPaymentGateway();
         $paymentGateway->charge(2000, $paymentGateway->getValidTestToken());
         $paymentGateway->charge(3000, $paymentGateway->getValidTestToken());
 
-        $newCharges = $paymentGateway->newChargesDuring(function ($paymentGateway) {
+        $newCharges = $paymentGateway->newChargesDuring(function (PaymentGateway $paymentGateway) {
             $paymentGateway->charge(4000, $paymentGateway->getValidTestToken());
             $paymentGateway->charge(5000, $paymentGateway->getValidTestToken());
         });
