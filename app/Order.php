@@ -4,6 +4,7 @@ namespace App;
 
 use App\Facades\OrderConfirmationNumber;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Class Order
@@ -30,7 +31,7 @@ class Order extends Model
 {
     protected $guarded = [];
 
-    public static function forTickets($tickets, $email, Charge $charge)
+    public static function forTickets(Collection $tickets, string $email, Charge $charge)
     {
         $order = self::create([
             'confirmation_number' => OrderConfirmationNumber::generate(),
@@ -39,11 +40,14 @@ class Order extends Model
             'card_last_four' => $charge->cardLastFour(),
         ]);
 
-        foreach ($tickets as $ticket) {
-            $order->tickets()->save($ticket);
-        }
+        $tickets->each->claimFor($order);
 
         return $order;
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 
     public static function findByConfirmationNumber(string $confirmationNumber)
@@ -54,11 +58,6 @@ class Order extends Model
     public function concert()
     {
         return $this->belongsTo(Concert::class);
-    }
-
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class);
     }
 
     public function ticketQuantity()
@@ -72,7 +71,7 @@ class Order extends Model
             'confirmation_number' => $this->confirmation_number,
             'email' => $this->email,
             'amount' => $this->amount,
-            'tickets' => $this->tickets->map(function ($ticket) {
+            'tickets' => $this->tickets->map(function (Ticket $ticket) {
                 return ['code' => $ticket->code];
             })->all(),
         ];
