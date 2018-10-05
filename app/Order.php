@@ -45,11 +45,6 @@ class Order extends Model
         return $order;
     }
 
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class);
-    }
-
     public static function findByConfirmationNumber(string $confirmationNumber)
     {
         return self::where('confirmation_number', $confirmationNumber)->firstOrFail();
@@ -63,6 +58,11 @@ class Order extends Model
     public function ticketQuantity()
     {
         return $this->tickets()->count();
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 
     public function toArray()

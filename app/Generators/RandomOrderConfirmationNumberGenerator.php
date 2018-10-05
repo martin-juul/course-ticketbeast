@@ -1,10 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Generators;
 
 class RandomOrderConfirmationNumberGenerator implements OrderConfirmationNumberGenerator
 {
-
     public function generate()
     {
         $pool = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

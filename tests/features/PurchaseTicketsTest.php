@@ -1,13 +1,10 @@
 <?php
 
-use App\Concert;
-use App\Billing\PaymentGateway;
 use App\Billing\FakePaymentGateway;
+use App\Billing\PaymentGateway;
+use App\Concert;
 use App\Facades\OrderConfirmationNumber;
-use App\OrderConfirmationNumberGenerator;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PurchaseTicketsTest extends TestCase
 {
@@ -16,47 +13,13 @@ class PurchaseTicketsTest extends TestCase
     /** @var PaymentGateway */
     private $paymentGateway;
 
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->paymentGateway = new FakePaymentGateway;
-        $this->app->instance(PaymentGateway::class, $this->paymentGateway);
-    }
-
-    private function orderTickets($concert, $params)
-    {
-        $savedRequest = $this->app['request'];
-        $this->response = $this->json('POST', "/concerts/{$concert->id}/orders", $params);
-        $this->app['request'] = $savedRequest;
-    }
-
-    private function assertResponseStatus($status)
-    {
-        $this->response->assertStatus($status);
-    }
-
-    private function seeJsonSubset($data)
-    {
-        $this->response->assertJson($data);
-    }
-
-    private function decodeResponseJson()
-    {
-        return $this->response->decodeResponseJson();
-    }
-
-    private function assertValidationError($field)
-    {
-        $this->assertResponseStatus(422);
-        $this->assertArrayHasKey($field, $this->decodeResponseJson());
-    }
-
     /** @test */
-    public function customer_can_purchase_tickets_to_a_published_concert()
+    public function customer_can_purchase_tickets_to_a_published_concert(): void
     {
         $this->disableExceptionHandling();
 
         OrderConfirmationNumber::shouldReceive('generate')->andReturn('ORDERCONFIRMATION1234');
+        \App\Facades\TicketCode::shouldReceive('generateFor')->andReturn('TICKETCODE1', 'TICKETCODE2', 'TICKETCODE3');
 
         $concert = factory(Concert::class)->states('published')->create(['ticket_price' => 3250])->addTickets(3);
 
@@ -84,8 +47,25 @@ class PurchaseTicketsTest extends TestCase
         $this->assertEquals(3, $concert->ordersFor('john@example.com')->first()->ticketQuantity());
     }
 
+    private function orderTickets($concert, $params)
+    {
+        $savedRequest = $this->app['request'];
+        $this->response = $this->json('POST', "/concerts/{$concert->id}/orders", $params);
+        $this->app['request'] = $savedRequest;
+    }
+
+    private function assertResponseStatus($status)
+    {
+        $this->response->assertStatus($status);
+    }
+
+    private function seeJsonSubset($data)
+    {
+        $this->response->assertJson($data);
+    }
+
     /** @test */
-    public function cannot_purchase_tickets_to_an_unpublished_concert()
+    public function cannot_purchase_tickets_to_an_unpublished_concert(): void
     {
         $concert = factory(Concert::class)->states('unpublished')->create()->addTickets(3);
 
@@ -101,7 +81,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function an_order_is_not_created_if_payment_fails()
+    public function an_order_is_not_created_if_payment_fails(): void
     {
         $concert = factory(Concert::class)->states('published')->create(['ticket_price' => 3250])->addTickets(3);
 
@@ -117,7 +97,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function cannot_purchase_more_tickets_than_remain()
+    public function cannot_purchase_more_tickets_than_remain(): void
     {
         $concert = factory(Concert::class)->states('published')->create()->addTickets(50);
 
@@ -134,7 +114,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function cannot_purchase_tickets_another_customer_is_already_trying_to_purchase()
+    public function cannot_purchase_tickets_another_customer_is_already_trying_to_purchase(): void
     {
         $this->disableExceptionHandling();
 
@@ -166,7 +146,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function email_is_required_to_purchase_tickets()
+    public function email_is_required_to_purchase_tickets(): void
     {
         $concert = factory(Concert::class)->states('published')->create();
 
@@ -178,8 +158,19 @@ class PurchaseTicketsTest extends TestCase
         $this->assertValidationError('email');
     }
 
+    private function assertValidationError($field)
+    {
+        $this->assertResponseStatus(422);
+        $this->assertArrayHasKey($field, $this->decodeResponseJson());
+    }
+
+    private function decodeResponseJson()
+    {
+        return $this->response->decodeResponseJson();
+    }
+
     /** @test */
-    public function email_must_be_valid_to_purchase_tickets()
+    public function email_must_be_valid_to_purchase_tickets(): void
     {
         $concert = factory(Concert::class)->states('published')->create();
 
@@ -193,7 +184,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function ticket_quantity_is_required_to_purchase_tickets()
+    public function ticket_quantity_is_required_to_purchase_tickets(): void
     {
         $concert = factory(Concert::class)->states('published')->create();
 
@@ -206,7 +197,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function ticket_quantity_must_be_at_least_1_to_purchase_tickets()
+    public function ticket_quantity_must_be_at_least_1_to_purchase_tickets(): void
     {
         $concert = factory(Concert::class)->states('published')->create();
 
@@ -220,7 +211,7 @@ class PurchaseTicketsTest extends TestCase
     }
 
     /** @test */
-    public function payment_token_is_required()
+    public function payment_token_is_required(): void
     {
         $concert = factory(Concert::class)->states('published')->create();
 
@@ -230,5 +221,12 @@ class PurchaseTicketsTest extends TestCase
         ]);
 
         $this->assertValidationError('payment_token');
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->paymentGateway = new FakePaymentGateway;
+        $this->app->instance(PaymentGateway::class, $this->paymentGateway);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Facades;
 
-use App\OrderConfirmationNumberGenerator;
+use App\Generators\OrderConfirmationNumberGenerator;
 use Illuminate\Support\Facades\Facade;
 
 class OrderConfirmationNumber extends Facade

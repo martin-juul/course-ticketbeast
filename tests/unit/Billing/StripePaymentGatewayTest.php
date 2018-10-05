@@ -1,11 +1,7 @@
 <?php
 
-use App\Billing\PaymentFailedException;
 use App\Billing\PaymentGateway;
 use App\Billing\StripePaymentGateway;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 /**
  * @group integration

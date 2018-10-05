@@ -2,9 +2,7 @@
 
 use App\Concert;
 use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ViewConcertListingTest extends TestCase
 {

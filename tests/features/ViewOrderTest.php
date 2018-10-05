@@ -4,9 +4,7 @@ use App\Concert;
 use App\Order;
 use App\Ticket;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ViewOrderTest extends TestCase
 {

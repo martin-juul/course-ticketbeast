@@ -1,9 +1,6 @@
 <?php
 
-use App\RandomOrderConfirmationNumberGenerator;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App\Generators\RandomOrderConfirmationNumberGenerator;
 
 class RandomOrderConfirmationNumberGeneratorTest extends TestCase
 {

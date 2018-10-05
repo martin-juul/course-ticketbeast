@@ -5,8 +5,6 @@ use App\Billing\PaymentGateway;
 
 trait PaymentGatewayContractTest
 {
-    abstract protected function getPaymentGateway();
-
     /** @test */
     function charges_with_a_valid_payment_token_are_successful()
     {
@@ -67,4 +65,6 @@ trait PaymentGatewayContractTest
         $this->assertCount(2, $newCharges);
         $this->assertEquals([5000, 4000], $newCharges->map->amount()->all());
     }
+
+    abstract protected function getPaymentGateway();
 }
